@@ -22,9 +22,11 @@
             {:dir (fs/parent exe-path)}))
 
 (defn -main [& args]
-  (let [game (rand-nth (get-game-executables "D:/Games"))]
-    (println "About to start " game)
-    (run-game game)
-    (println "Fun time is ovah!")))
+  (do
+   (let [game (rand-nth (get-game-executables "D:/Games"))]
+     (println "About to start " game)
+     (Thread/sleep 10)
+     (run-game game)
+     (println "Fun time is ovah!"))))
 
 ; @(exec/sh ["cmd" "/C" "start" "D:/games/yyyyyy/yyyyyy.exe"] {:dir "d:/games/yyyyyy"})
