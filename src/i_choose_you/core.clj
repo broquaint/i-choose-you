@@ -17,16 +17,21 @@
              (for [d (filter fs/directory? (path-join-dir games))]
                (filter #(re-find #"exe$" %) (path-join-dir d))))))
 
-(defn run-game [exe-path]
-  @(exec/sh [exe-path] ; ["cmd" "/C" "start" exe-path]
-            {:dir (fs/parent exe-path)}))
+(defn get-games []
+  (concat
+   (path-join-dir "C:/Users/Dan/Game Shortcuts")
+   (get-game-executables "D:/Games")))
+
+(defn run-game [game-path]
+  @(exec/sh
+    ["cmd" "/C" (fs/base-name game-path)]
+    {:dir (fs/parent game-path)}))
 
 (defn -main [& args]
-  (do
-   (let [game (rand-nth (get-game-executables "D:/Games"))]
-     (println "About to start " game)
-     (Thread/sleep 10)
-     (run-game game)
-     (println "Fun time is ovah!"))))
-
-; @(exec/sh ["cmd" "/C" "start" "D:/games/yyyyyy/yyyyyy.exe"] {:dir "d:/games/yyyyyy"})
+  (let [game (rand-nth (get-games))
+        game-name (clojure.string/replace (str (fs/base-name game)) #"[.]\w+$" "")]
+    (do
+      (println "Launching -" game-name)
+      (Thread/sleep 3000)
+      (run-game game)
+      (println "Fun time is ovah!"))))
