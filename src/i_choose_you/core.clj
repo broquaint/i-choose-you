@@ -17,10 +17,11 @@
         go   (select f [:#go])
         info (select f [:#info])]
     (do
-      (run-game game)
       (config! go   :text "Launch another game?")
       (config! info :text (str/join " " ["Running:" game-name]))
-      (-> f pack! show!))))
+      (-> f pack! show!)
+      (Thread/sleep 2)   ; Enough time for the UI to update (I think)
+      (run-game game))))
 
 (def go-button
   (button :id :go
