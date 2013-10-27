@@ -1,7 +1,7 @@
 (ns i-choose-you.get-game
-  (require [fs.core          :as fs]
-           [clj-commons-exec :as exec]
-           [clojure.string   :as str]))
+  (:use [clojure.java.shell :only (sh)])
+  (:require [fs.core          :as fs]
+            [clojure.string   :as str]))
 
 ;; Hackery for fs/Java fail
 (defn path-join     [& args] (str/join "/" args))
@@ -23,10 +23,11 @@
    (path-join-dir "C:/Users/Dan/Game Shortcuts")
    (get-game-executables "D:/Games")))
 
-(defn run-game [game-path]
-  @(exec/sh
-    ["cmd" "/C" (fs/base-name game-path)]
-    {:dir (fs/parent game-path)}))
+(defn run-game [game-path callback]
+  (sh
+    "cmd" "/C" (fs/base-name game-path)
+    :dir (fs/parent game-path))
+  (callback))
 
 (defn get-game []
   (let [game (rand-nth (get-games))]

@@ -20,8 +20,8 @@
       (config! go   :text "Launch another game?")
       (config! info :text (str/join " " ["Running:" game-name]))
       (-> f pack! show!)
-      (Thread/sleep 2)   ; Enough time for the UI to update (I think)
-      (run-game game))))
+      (future (run-game game
+                 #(config! info :text (str "Finished: " game-name)))))))
 
 (def go-button
   (button :id :go
