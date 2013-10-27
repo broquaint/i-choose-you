@@ -20,6 +20,8 @@
       (config! go   :text "Launch another game?")
       (config! info :text (str/join " " ["Running:" game-name]))
       (-> f pack! show!)
+      ; Sometimes this will return immediately e.g a Steam game
+      ; launching steam, but there's not much we can do about this.
       (future (run-game game
                  #(config! info :text (str "Finished: " game-name)))))))
 

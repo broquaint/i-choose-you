@@ -1,7 +1,8 @@
 (ns i-choose-you.get-game
   (:use [clojure.java.shell :only (sh)])
   (:require [fs.core          :as fs]
-            [clojure.string   :as str]))
+            [clojure.string   :as str]
+            [clojure.edn      :as edn]))
 
 ;; Hackery for fs/Java fail
 (defn path-join     [& args] (str/join "/" args))
@@ -18,10 +19,14 @@
              (for [d (filter fs/directory? (path-join-dir games))]
                (filter #(re-find #"exe$" %) (path-join-dir d))))))
 
+(defn get-config [key]
+  (let [config (edn/read-string (slurp (str fs/*cwd* "/config.edn")))]
+    (config key)))
+
 (defn get-games []
   (concat
-   (path-join-dir "C:/Users/Dan/Game Shortcuts")
-   (get-game-executables "D:/Games")))
+   (mapcat path-join-dir (get-config :shortcuts))
+   (mapcat get-game-executables (get-config :directories))))
 
 (defn run-game [game-path callback]
   (sh
